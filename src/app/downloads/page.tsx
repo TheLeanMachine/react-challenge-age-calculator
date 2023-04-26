@@ -1,5 +1,6 @@
 
-import React from 'react'
+import React from 'react';
+import Link from 'next/link';
 
 export default function DownloadsHome() {
 
@@ -12,12 +13,18 @@ export default function DownloadsHome() {
   ];
 
   return (
-    <ul>
-      {
-        downloads.map((dl, index) =>
-          <li key={index}>{dl}</li>
-        )
-      }
-    </ul>
+    <div>
+      <h1 className="text-4xl">Downloads</h1>
+
+      <ul>
+        {
+          downloads.map((dl, index) =>
+            <li key={index}>{dl}</li>
+          )
+        }
+      </ul>
+
+      Navigation: <Link className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600" href="/blog/">to Blog</Link>
+    </div>
   )
 }
