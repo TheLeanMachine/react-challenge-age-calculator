@@ -1,20 +1,74 @@
 'use client';
 
-import { useRef } from 'react'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 
+function toInt(value: string): number {
+  return parseInt(value, 10);
+}
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 
-  const refDay = useRef('day');
+  function isFutureYear(year: string): boolean {
+    const now = new Date();
+    const userYear = toInt(year);
 
-  function handleFormInput(event: any): void {
+    return userYear > now.getFullYear();
+  }
+
+
+  function dateHasOverflow(day: number, month: number): boolean {
+    switch (month) {
+      case 2:
+        return day > 28;
+      case 4:
+      case 6:
+      case 8:
+      case 9:
+      case 11:
+        return day > 30;
+      case 1:
+      case 3:
+      case 5:
+      case 7:
+      case 8:
+      case 10:
+      case 12:
+        return day > 31;
+      default:
+        throw new Error('Unexpected switch case'); // should not happen, when all options considered
+    }
+  }
+
+  function isInvalidDate(day: string, month: string, year: string): boolean {
+    const dayAsNumber = toInt(day);
+    const monthAsNumber = toInt(month);
+    const monthIndex = monthAsNumber - 1;
+    const userDate = new Date(toInt(year), monthIndex, dayAsNumber);
+    const userTimestamp = userDate.toString();
+
+    return Number.isNaN(userTimestamp) || dateHasOverflow(dayAsNumber, monthAsNumber);
+  }
+
+  function handleFormInput(event: any): boolean {
+    const day: string = event.target.day.value;
+    const month: string = event.target.month.value;
+    const year: string = event.target.year.value;
+
     event.preventDefault();
-    
-    window.alert('moop! - d: ' + event.target.day.value + ', m: ' + event.target.month.value + ', y: ' + event.target.year.value);
+
+    if (isFutureYear(year)) {
+      window.alert(`Invalid date! Year ${year} is in the future!`);
+      return false;
+    } else if (isInvalidDate(day, month, year)) {
+      window.alert(`${day}.${month}.${year} is an invalid date, peasant!`);
+      return false;
+    }
+
+    // TODO calculate age
+    return true;
   }
 
   return (
@@ -49,9 +103,10 @@ export default function Home() {
         <div className="mb-8">
           <label htmlFor="year">Year: </label>
           <input
-            type="text"
+            type="number"
             name="year"
             required
+            min="1900"
           />
         </div>
 
@@ -180,3 +235,4 @@ export default function Home() {
     </main>
   )
 }
+
