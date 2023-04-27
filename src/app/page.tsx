@@ -25,17 +25,34 @@ export default function Home() {
       <form onSubmit={handleFormInput} method="post">
         <div className="mb-8">
           <label htmlFor="day">Day: </label>
-          <input type="text" id="day" name="day" />
+          <input
+            type="number"
+            name="day"
+            required
+            min="1"
+            max="31"
+            autoFocus
+          />
         </div>
 
         <div className="mb-8">
           <label htmlFor="month">Month: </label>
-          <input type="text" id="month" name="month" />
+          <input
+            type="number"
+            name="month"
+            required
+            min="1"
+            max="12"
+          />
         </div>
 
         <div className="mb-8">
           <label htmlFor="year">Year: </label>
-          <input type="text" id="year" name="year" />
+          <input
+            type="text"
+            name="year"
+            required
+          />
         </div>
 
         <button type="submit">Submit</button>
