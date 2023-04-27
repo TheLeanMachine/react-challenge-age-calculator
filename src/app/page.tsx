@@ -11,13 +11,11 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 
-  function isFutureYear(year: string): boolean {
+  function isFutureYear(year: number): boolean {
     const now = new Date();
-    const userYear = toInt(year);
 
-    return userYear > now.getFullYear();
+    return year > now.getFullYear();
   }
-
 
   function dateHasOverflow(day: number, month: number): boolean {
     switch (month) {
@@ -42,20 +40,55 @@ export default function Home() {
     }
   }
 
-  function isInvalidDate(day: string, month: string, year: string): boolean {
-    const dayAsNumber = toInt(day);
-    const monthAsNumber = toInt(month);
-    const monthIndex = monthAsNumber - 1;
-    const userDate = new Date(toInt(year), monthIndex, dayAsNumber);
+  function isInvalidDate(day: number, month: number, year: number): boolean {
+    const monthIndex = month - 1;
+    const userDate = new Date(year, monthIndex, day);
     const userTimestamp = userDate.toString();
 
-    return Number.isNaN(userTimestamp) || dateHasOverflow(dayAsNumber, monthAsNumber);
+    return Number.isNaN(userTimestamp) || dateHasOverflow(day, month);
+  }
+
+  function calculateAgeInMillisseconds(day: number, month: number, year: number): number {
+    const nowEpochMillis = new Date().getTime();
+    const monthIndex = month - 1;
+    const birthDateEpochMillis = new Date(year, monthIndex, day).getTime();
+
+    return nowEpochMillis - birthDateEpochMillis;
+  }
+
+  function yearInMilliseconds(): number {
+    return monthInMilliseconds() * 12; // Who cares about leap years, right? ^^
+  }
+
+  function monthInMilliseconds(): number {
+    return dayInMilliseconds() * 30; // developer approximation... ;-)
+  }
+
+  function dayInMilliseconds(): number {
+    return 1000 * 60 * 60 * 24;
+  }
+
+  function calculateAndPrintAge(day: number, month: number, year: number): void {
+    const ageMillis = calculateAgeInMillisseconds(day, month, year);
+    const passedYears = Math.floor(ageMillis / yearInMilliseconds());
+
+
+console.log('>>> ' + passedYears)
+
+    const yearsRemainderMillis = ageMillis % yearInMilliseconds();
+    const passedMonths = Math.floor(yearsRemainderMillis / monthInMilliseconds());
+    const monthsRemainderMillis = ageMillis % monthInMilliseconds();
+    const passedDays = Math.floor(monthsRemainderMillis / dayInMilliseconds());
+
+    document.getElementById('calculatedYears').textContent = passedYears;
+    document.getElementById('calculatedMonths').textContent = passedMonths;
+    document.getElementById('calculatedDays').textContent = passedDays;
   }
 
   function handleFormInput(event: any): boolean {
-    const day: string = event.target.day.value;
-    const month: string = event.target.month.value;
-    const year: string = event.target.year.value;
+    const day: number = toInt(event.target.day.value);
+    const month: number = toInt(event.target.month.value);
+    const year: number = toInt(event.target.year.value);
 
     event.preventDefault();
 
@@ -67,7 +100,7 @@ export default function Home() {
       return false;
     }
 
-    // TODO calculate age
+    calculateAndPrintAge(day, month, year);
     return true;
   }
 
@@ -116,9 +149,9 @@ export default function Home() {
       <img src="/images/icon-arrow.svg" />
 
       <div>
-        <div>years</div>
-        <div>months</div>
-        <div>days</div>
+        <div><span id="calculatedYears">0</span> years</div>
+        <div><span id="calculatedMonths">0</span> months</div>
+        <div><span id="calculatedDays">0</span> days</div>
       </div>
 
 
