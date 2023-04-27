@@ -24,7 +24,8 @@ export default function DownloadsHome() {
         }
       </ul>
 
-      Navigation: <Link className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600" href="/blog/">to Blog</Link>
+      <br />
+      Navigation: <Link className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600" href="/">Home</Link>, <Link className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600" href="/blog/">to Blog</Link>
     </div>
   )
 }
