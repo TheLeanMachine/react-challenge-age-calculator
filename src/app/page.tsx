@@ -2,12 +2,14 @@
 
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
+import moment from 'moment';
+
+// Dunno what this does, but I am keeping it... - Kai
+const inter = Inter({ subsets: ['latin'] })
 
 function toInt(value: string): number {
   return parseInt(value, 10);
 }
-
-const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 
@@ -48,34 +50,15 @@ export default function Home() {
     return Number.isNaN(userTimestamp) || dateHasOverflow(day, month);
   }
 
-  function calculateAgeInMillisseconds(day: number, month: number, year: number): number {
-    const nowEpochMillis = new Date().getTime();
-    const monthIndex = month - 1;
-    const birthDateEpochMillis = new Date(year, monthIndex, day).getTime();
-
-    return nowEpochMillis - birthDateEpochMillis;
-  }
-
-  function yearInMilliseconds(): number {
-    return monthInMilliseconds() * 12; // Who cares about leap years, right? ^^
-  }
-
-  function monthInMilliseconds(): number {
-    return dayInMilliseconds() * 30; // developer approximation... ;-)
-  }
-
-  function dayInMilliseconds(): number {
-    return 1000 * 60 * 60 * 24;
-  }
-
   function calculateAndPrintAge(day: number, month: number, year: number): void {
-    const ageMillis = calculateAgeInMillisseconds(day, month, year);
-    const passedYears = Math.floor(ageMillis / yearInMilliseconds());
-
-    const yearsRemainderMillis = ageMillis % yearInMilliseconds();
-    const passedMonths = Math.floor(yearsRemainderMillis / monthInMilliseconds());
-    const monthsRemainderMillis = ageMillis % monthInMilliseconds();
-    const passedDays = Math.floor(monthsRemainderMillis / dayInMilliseconds());
+    const now = moment();
+    const userDateOfBirth = moment([year, month, day]);
+    const age = moment.duration(now.diff(userDateOfBirth));
+    const passedYears = Math.floor(age.as('years'));
+    const ageWithoutYears = age.subtract(moment.duration(passedYears, 'years'));
+    const passedMonths = Math.floor(ageWithoutYears.as('months'));
+    const ageWithoutYearsAndMonths = ageWithoutYears.subtract(moment.duration(passedMonths, 'months'));
+    const passedDays = Math.floor(ageWithoutYearsAndMonths.as('days'));
 
     document.getElementById('calculatedYears').textContent = passedYears;
     document.getElementById('calculatedMonths').textContent = passedMonths;
